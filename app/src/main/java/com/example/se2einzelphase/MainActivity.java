@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -24,13 +25,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.buttonSend).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView response = findViewById(R.id.MessageServer);
+                TextView responseServerVisual = findViewById(R.id.MessageServer);
+                EditText matrNrVisual = findViewById(R.id.MatrNr);
+                String matrNrString = matrNrVisual.getText().toString();
 
-                findViewById(R.id.MatrNr);
-
-
-
-                ThreadForButton p = new ThreadForButton(response);
+                ThreadForButton p = new ThreadForButton(matrNrString);
                 p.start();
 
                 try {
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                responseServerVisual.setText(p.getResponseServer());
 
             }
         });
@@ -50,28 +50,33 @@ public class MainActivity extends AppCompatActivity {
 
 
  class ThreadForButton extends Thread {
-    TextView response;
+     String matrNrToServer;
+     String responseServer;
 
-    ThreadForButton(TextView response){
-        this.response= response;
-    }
+     ThreadForButton(String matrNr){
+         matrNrToServer = matrNr;
+     }
 
     public void run(){
         try {
+            Socket clientSocket = new Socket("se2-isys.aau.at", 53212);         //Erstellen einer Verknüpfung zum Server
 
-            Socket clientSocket = new Socket("se2-isys.aau.at", 53212);
-
-            response.setText("Hier steht später die Antwort vom Server");
-
-
-
+            //Erstellen von Streams zum Versenden und Empfangen von Daten vom Server
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            outToServer.writeBytes(matrNrToServer + '\n');                          //versenden unserer Daten zum Server
+
+            responseServer = inFromServer.readLine();                                //lesen der Daten vom Server
 
             clientSocket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    String getResponseServer(){
+         return responseServer;
     }
 }

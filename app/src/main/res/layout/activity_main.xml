@@ -36,8 +36,8 @@
 
     <TextView
         android:id="@+id/MessageServer"
-        android:layout_width="220dp"
-        android:layout_height="56dp"
+        android:layout_width="267dp"
+        android:layout_height="157dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="Antwort vom Server"
         android:textSize="24sp"
