@@ -32,38 +32,40 @@ public class MainActivity extends AppCompatActivity {
         matrNrVisual = findViewById(R.id.MatrNr);
     }
 
+    //Sends to server
     public void clickButtonSend(View view) throws InterruptedException{
-        String matrNrString=  matrNrVisual.getText().toString();
+        String matrNrString=  matrNrVisual.getText().toString();                //read out the String from Field MatrNrVisual
 
-        ThreadForButton threadForServerConnection = new ThreadForButton(matrNrString);
+        ThreadForButton threadForServerConnection = new ThreadForButton(matrNrString);      //make new Thread for building the connection
 
-        threadForServerConnection.start();
+        threadForServerConnection.start();                                          //call start for run methode to be called (multithreading just works with start not with run)
 
-        threadForServerConnection.join();
+        threadForServerConnection.join();                                           //waiting for thread to finish
 
-        responseServerVisual.setText(threadForServerConnection.getResponseServer());
+        responseServerVisual.setText(threadForServerConnection.getResponseServer());        //set response text in app with getter methode from Thread
 
     }
 
-    public void clickButtonCalculateThenSortMatrNr(View view){
-        String matrNrString=  matrNrVisual.getText().toString();
+    //Sorts MartNr with even numbers first then uneven numbers
+    public void clickButtonCalculateThenSortMatrNr(View view) {
+        String matrNrString = matrNrVisual.getText().toString();
         char[] matrNrCharArray = matrNrString.toCharArray();
 
         Arrays.sort(matrNrCharArray);
 
-        ArrayList<Character> evenNumbers= new ArrayList<>();
-        ArrayList<Character> unevenNumbers= new ArrayList<>();
+        ArrayList<Character> evenNumbers = new ArrayList<>();
+        ArrayList<Character> unevenNumbers = new ArrayList<>();
 
 
-        for (int i=0; i < matrNrCharArray.length; i++){
-            if (matrNrCharArray[i]%2 == 0){
+        for (int i = 0; i < matrNrCharArray.length; i++) {
+            if (matrNrCharArray[i] % 2 == 0) {
                 evenNumbers.add(matrNrCharArray[i]);
-            }else {
+            } else {
                 unevenNumbers.add(matrNrCharArray[i]);
             }
         }
 
-        ArrayList<Character> modifiedMatrNrList= new ArrayList<Character>();
+        ArrayList<Character> modifiedMatrNrList = new ArrayList<Character>();
         modifiedMatrNrList.addAll(evenNumbers);
         modifiedMatrNrList.addAll(unevenNumbers);
 
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
             responseServer = inFromServer.readLine();                                //lesen der Daten vom Server
 
-            clientSocket.close();
+            clientSocket.close();                                               //Verbindung wieder schließen
 
         } catch (IOException e) {
             e.printStackTrace();
