@@ -13,37 +13,61 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity {
+    TextView responseServerVisual;
+    EditText matrNrVisual;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.buttonSend).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView responseServerVisual = findViewById(R.id.MessageServer);
-                EditText matrNrVisual = findViewById(R.id.MatrNr);
-                String matrNrString = matrNrVisual.getText().toString();
+        //Variablen:
+        responseServerVisual = findViewById(R.id.MessageServer);
+        matrNrVisual = findViewById(R.id.MatrNr);
+    }
 
-                ThreadForButton p = new ThreadForButton(matrNrString);
-                p.start();
+    public void clickButtonSend(View view) throws InterruptedException{
+        String matrNrString=  matrNrVisual.getText().toString();
 
-                try {
-                    p.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        ThreadForButton threadForServerConnection = new ThreadForButton(matrNrString);
 
-                responseServerVisual.setText(p.getResponseServer());
+        threadForServerConnection.start();
 
+        threadForServerConnection.join();
+
+        responseServerVisual.setText(threadForServerConnection.getResponseServer());
+
+    }
+
+    public void clickButtonCalculateThenSortMatrNr(View view){
+        String matrNrString=  matrNrVisual.getText().toString();
+        char[] matrNrCharArray = matrNrString.toCharArray();
+
+        Arrays.sort(matrNrCharArray);
+
+        ArrayList<Character> evenNumbers= new ArrayList<>();
+        ArrayList<Character> unevenNumbers= new ArrayList<>();
+
+
+        for (int i=0; i < matrNrCharArray.length; i++){
+            if (matrNrCharArray[i]%2 == 0){
+                evenNumbers.add(matrNrCharArray[i]);
+            }else {
+                unevenNumbers.add(matrNrCharArray[i]);
             }
-        });
+        }
 
+        ArrayList<Character> modifiedMatrNrList= new ArrayList<Character>();
+        modifiedMatrNrList.addAll(evenNumbers);
+        modifiedMatrNrList.addAll(unevenNumbers);
 
+        responseServerVisual.setText(modifiedMatrNrList.toString());
 
     }
 }
@@ -55,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
      ThreadForButton(String matrNr){
          matrNrToServer = matrNr;
+     }
+
+     String getResponseServer(){
+         return responseServer;
      }
 
     public void run(){
@@ -76,7 +104,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    String getResponseServer(){
-         return responseServer;
-    }
 }
